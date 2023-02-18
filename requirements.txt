@@ -1,0 +1,8 @@
+pytorch_lightning
+transformers
+Korpora
+wandb
+typing-extensions
+datasets
+omegaconf
+accelerate
