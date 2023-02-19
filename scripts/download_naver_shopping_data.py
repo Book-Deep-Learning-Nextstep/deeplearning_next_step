@@ -7,7 +7,7 @@ import dlns.data.download_shopping_data
 
 WORK_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../")
 ENV_PATH_SET = {
-    "dev": os.path.join(WORK_DIR, ".env")
+    "dev": os.path.join(WORK_DIR, ".dev.env")
 }
 load_dotenv(ENV_PATH_SET["dev"])
 
