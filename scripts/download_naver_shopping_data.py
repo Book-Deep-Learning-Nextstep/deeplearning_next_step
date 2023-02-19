@@ -22,8 +22,10 @@ if __name__ == "__main__":
     
     # client_id & passwd should be registered in 
     # https://developers.naver.com/docs/serviceapi/search/shopping/shopping.md
-    client_id = os.environ.get('naver_api_client_id')
-    client_passwd = os.environ.get('naver_api_client_passwd')
+    client_id = os.environ.get('naver_api_client_id', None)
+    client_passwd = os.environ.get('naver_api_client_passwd', None)
+    if client_id is None or client_passwd is None:
+        raise ValueError("env cannot be found.")
     queries = [
         "의자",
         "책상",
@@ -47,4 +49,3 @@ if __name__ == "__main__":
         client_id,
         client_passwd,
     )
-    breakpoint()
