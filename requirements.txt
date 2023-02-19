@@ -6,3 +6,8 @@ typing-extensions
 datasets
 omegaconf
 accelerate
+wget
+pandas
+numpy
+matplotlib
+python-dotenv
