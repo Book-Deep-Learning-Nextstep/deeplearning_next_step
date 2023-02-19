@@ -2,7 +2,6 @@ import os
 from typing import Union
 
 import pytorch_lightning as pl
-import torch
 import wandb
 from omegaconf import DictConfig
 from torch import optim
