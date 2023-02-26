@@ -5,6 +5,7 @@ import re
 import urllib.parse
 import urllib.request
 from datetime import datetime
+from time import sleep
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -24,6 +25,7 @@ def download(url: str, out_path: str = ".") -> None:
             break
         except Exception:
             try_i += 1
+            sleep(1)
 
 
 def cleanhtml(raw_html: str) -> str:
@@ -55,15 +57,17 @@ def get_navershopping_query(
     raise ValueError()
 
 
-def zip_query_results(query2results: Dict[str, dict]) -> pd.DataFrame:
+def zip_query_results(
+    query2results: Dict[str, dict], datetime_info: str
+) -> pd.DataFrame:
     results = []
     for query, result in tqdm(
-        query2results.items(), desc="update additinoal info", total=len(query2results)
+        query2results.items(), desc="update additional info", total=len(query2results)
     ):
         cur_df = pd.DataFrame(result["items"])
         cur_df["query"] = query
         cur_df["rank"] = range(1, len(result["items"]) + 1)
-        cur_df["date"] = pd.to_datetime(datetime.now())
+        cur_df["date"] = pd.to_datetime(datetime.fromisoformat(datetime_info))
         results.append(cur_df)
     concated = pd.concat(results, ignore_index=True)
     concated.reset_index(drop=True, inplace=True)
@@ -71,6 +75,7 @@ def zip_query_results(query2results: Dict[str, dict]) -> pd.DataFrame:
 
 
 def get_daily_shopping_search_data(
+    datetime_str: str,
     queries: List[str],
     client_id: str,
     client_secret: str,
@@ -82,7 +87,7 @@ def get_daily_shopping_search_data(
         responses[q] = get_navershopping_query(
             q, client_id, client_secret, display_n, sort
         )
-    return zip_query_results(responses)
+    return zip_query_results(responses, datetime_str)
 
 
 def string_cleansing(df: pd.DataFrame, apply_columns: List[str]):
@@ -107,6 +112,7 @@ def download_images(
 
 
 def main(
+    datetime_str: str,
     queries: List[str],
     out_path: str,
     string_cleansing_columns: List[str],
@@ -119,7 +125,7 @@ def main(
 ) -> pd.DataFrame:
     assert out_path.endswith(".csv")
     df = get_daily_shopping_search_data(
-        queries, client_id, client_secret, display_n, sort
+        datetime_str, queries, client_id, client_secret, display_n, sort
     )
     df = string_cleansing(df, string_cleansing_columns)
     if not os.path.exists(image_download_root_path):
