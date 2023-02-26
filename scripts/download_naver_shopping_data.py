@@ -48,4 +48,5 @@ if __name__ == "__main__":
         image_save_root,
         client_id,
         client_passwd,
+        test_split_ends=tuple(["0", "1"]),
     )
