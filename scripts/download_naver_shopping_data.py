@@ -31,17 +31,15 @@ if __name__ == "__main__":
         "책상",
         "컴퓨터",
         "tv",
-        "모니터",
-        "이어폰",
         "해드폰",
         "러그",
         "컵",
         "쟁반",
         "청소기",
         "세탁기",
-        "정수기",
     ]
     results = dlns.data.download_shopping_data.main(
+        cur_time,
         queries,
         save_path,
         ["title"],
