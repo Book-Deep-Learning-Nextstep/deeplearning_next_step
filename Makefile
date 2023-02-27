@@ -23,6 +23,7 @@ install:          ## Install the project in dev mode.
 	@if [ "$(USING_POETRY)" ]; then poetry install && exit; fi
 	@echo "Don't forget to run 'make virtualenv' if you got errors."
 	$(ENV_PREFIX)pip install -e .[test]
+	$(ENV_PREFIX)pip install -r requirements.txt
 
 .PHONY: fmt
 fmt:              ## Format code using black & isort.
@@ -39,7 +40,7 @@ lint:             ## Run pep8, black, mypy linters.
 
 .PHONY: test
 test: lint        ## Run tests and generate coverage report.
-	$(ENV_PREFIX)pytest -v --cov-config .coveragerc --cov=spkal -l --tb=short --maxfail=1 tests/
+	$(ENV_PREFIX)pytest -v --cov-config .coveragerc --cov=dlns -l --tb=short --maxfail=1 tests/
 	$(ENV_PREFIX)coverage xml
 	$(ENV_PREFIX)coverage html
 
@@ -78,9 +79,9 @@ virtualenv:       ## Create a virtual environment.
 release:          ## Create a new tag for release.
 	@echo "WARNING: This operation will create s version tag and push to github"
 	@read -p "Version? (provide the next x.y.z semver) : " TAG
-	@echo "$${TAG}" > spkal/VERSION
+	@echo "$${TAG}" > dlns/VERSION
 	@$(ENV_PREFIX)gitchangelog > HISTORY.md
-	@git add spkal/VERSION HISTORY.md
+	@git add dlns/VERSION HISTORY.md
 	@git commit -m "release: version $${TAG} 🚀"
 	@echo "creating git tag : $${TAG}"
 	@git tag $${TAG}
@@ -102,7 +103,7 @@ switch-to-poetry: ## Switch to poetry package manager.
 	@poetry init --no-interaction --name=a_flask_test --author=rochacbruno
 	@echo "" >> pyproject.toml
 	@echo "[tool.poetry.scripts]" >> pyproject.toml
-	@echo "spkal = 'spkal.__main__:main'" >> pyproject.toml
+	@echo "dlns = 'dlns.__main__:main'" >> pyproject.toml
 	@cat requirements.txt | while read in; do poetry add --no-interaction "$${in}"; done
 	@cat requirements-test.txt | while read in; do poetry add --no-interaction "$${in}" --dev; done
 	@poetry install --no-interaction
@@ -110,6 +111,6 @@ switch-to-poetry: ## Switch to poetry package manager.
 	@mv requirements* .github/backup
 	@mv setup.py .github/backup
 	@echo "You have switched to https://python-poetry.org/ package manager."
-	@echo "Please run 'poetry shell' or 'poetry run spkal'"
+	@echo "Please run 'poetry shell' or 'poetry run dlns'"
 
 # This project has been modified from rochacbruno/python-project-template

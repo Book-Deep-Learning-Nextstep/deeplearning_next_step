@@ -149,5 +149,9 @@ wandb
 **/*.swp
 **/*.pth
 
-# audio
+# datasets
 dataset/**
+
+# env
+.env
+**.env
