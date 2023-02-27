@@ -11,3 +11,4 @@ pandas
 numpy
 matplotlib
 python-dotenv
+git+https://github.com/navervision/KELIP.git
