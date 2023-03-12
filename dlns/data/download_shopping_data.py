@@ -17,15 +17,18 @@ from tqdm import tqdm
 
 
 def download(url: str, out_path: str = ".") -> None:
-    max_try = 10
+    max_try = 5
     try_i = 0
     while try_i < max_try:
         try:
-            wget.download(url, out=out_path, bar=None)
+            wget.download(url, out=out_path)
             break
         except Exception:
             try_i += 1
             sleep(1)
+    else:
+        print("Cannot download images.. last try:")
+        wget.download(url, out=out_path)
 
 
 def cleanhtml(raw_html: str) -> str:
@@ -34,16 +37,16 @@ def cleanhtml(raw_html: str) -> str:
     return cleantext
 
 
-# %%
-def get_navershopping_query(
+def _get_navershopping_query(
     query: str,
     client_id: str,
     client_secret: str,
+    start: int = 1,
     display_n: int = 100,
     sort: str = "sim",  # si, date, asc, dsc.
 ) -> dict:
     query = urllib.parse.quote(query)
-    url = f"https://openapi.naver.com/v1/search/shop.json?query={query}&display={display_n}&sort={sort}"
+    url = f"https://openapi.naver.com/v1/search/shop.json?query={query}&display={display_n}&sort={sort}&start={start}"
     request = urllib.request.Request(url)
     request.add_header("X-Naver-Client-Id", client_id)
     request.add_header("X-Naver-Client-Secret", client_secret)
@@ -55,6 +58,37 @@ def get_navershopping_query(
         return json.loads(response_body.decode("utf-8"))
     print("Error Code:" + rescode)
     raise ValueError()
+
+
+def get_navershopping_query(
+    query: str,
+    client_id: str,
+    client_secret: str,
+    display_n: int = 100,
+    sort: str = "sim",  # si, date, asc, dsc.
+) -> dict:
+    assert display_n <= 1000
+    _unit_display_n = min(100, display_n)
+
+    results = {
+        "lastBuildDate": None,
+        "total": 0,
+        "start": 1,
+        "display": display_n,
+        "items": [],
+    }
+    for start in range(1, display_n + 1, 100):
+        if start // 100 == display_n // 100:
+            _unit_display_n = display_n % 100
+        cur_result = _get_navershopping_query(
+            query, client_id, client_secret, start, _unit_display_n, sort
+        )
+
+        results["lastBuildDate"] = cur_result["lastBuildDate"]
+        results["total"] = cur_result["total"]
+        results["items"].extend(cur_result["items"])
+
+    return results
 
 
 def zip_query_results(
@@ -79,8 +113,8 @@ def get_daily_shopping_search_data(
     queries: List[str],
     client_id: str,
     client_secret: str,
-    display_n: int = 100,
-    sort: str = "sim",  # si, date, asc, dsc.
+    display_n: int = 1000,
+    sort: str = "sim",  # sim, date, asc, dsc.
 ) -> pd.DataFrame:
     responses = {}
     for q in tqdm(queries, desc="getting daily query response", total=len(queries)):
@@ -103,11 +137,17 @@ def download_images(
     local_new_link_key: str = "local_image",
 ):
     out_paths = []
+    links = []
     for link in tqdm(df[link_key], desc="download_images", total=len(df)):
         out_path = os.path.join(out_root, link.replace("/", "|"))
         out_paths.append(os.path.relpath(out_path))
-        download(link, out_path)
+        links.append(link)
+
     df[local_new_link_key] = out_paths
+
+    for link, out_path in tqdm(zip(links, out_paths), total=len(links)):
+        download(link, out_path)
+
     return df
 
 
@@ -119,7 +159,7 @@ def main(
     image_download_root_path: str,
     client_id: str,
     client_secret: str,
-    display_n: int = 100,
+    display_n: int = 1000,
     sort: str = "sim",  # si, date, asc, dsc.
     test_split_ends: Optional[Tuple[str]] = None,
 ) -> pd.DataFrame:

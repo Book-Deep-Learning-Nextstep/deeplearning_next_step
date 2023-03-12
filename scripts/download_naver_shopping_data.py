@@ -27,16 +27,16 @@ if __name__ == "__main__":
     if client_id is None or client_passwd is None:
         raise ValueError("env cannot be found.")
     queries = [
-        "의자",
-        "책상",
-        "컴퓨터",
+        "노트북",
         "tv",
-        "해드폰",
-        "러그",
-        "컵",
-        "쟁반",
+        "헤드셋",
+        "스마트폰",
         "청소기",
         "세탁기",
+        "마우스",
+        "키보드",
+        "마우스패드",
+        "모니터",
     ]
     results = dlns.data.download_shopping_data.main(
         cur_time,
