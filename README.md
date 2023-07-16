@@ -1,16 +1,11 @@
 # (WORK IN PROGRESS) deeplearning_next_step
 
-## Install it
-
-```bash
-# From PyPI
-pip install git+https://github.com/jungbaepark/deeplearning_next_step # or
-git clone https://github.com/jungbaepark/deeplearning_next_step
-cd deeplearning_next_step
-make install
-```
-
 ---
+## MONO Repo
+
+- For Part 1, 2, please see ./modeling/
+- For Part 3, please see ./...
+
 
 ## Code Format & Lint (black, isort, flake8)
 
@@ -19,6 +14,4 @@ make fmt # format
 make lint # lint
 ```
 
-## Q&A
 
-Jungbae Park: jbpark0614@gmail.com

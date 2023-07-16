@@ -11,4 +11,9 @@ pandas
 numpy
 matplotlib
 python-dotenv
+onnx
+onnxruntime
+sentencepiece
 git+https://github.com/navervision/KELIP.git
+git+https://github.com/SKTBrain/KoBERT.git#egg=kobert_tokenizer&subdirectory=kobert_hf
+
