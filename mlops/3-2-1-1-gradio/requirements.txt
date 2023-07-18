@@ -1,0 +1,9 @@
+gradio
+torch
+torchvision 
+requests
+torchaudio
+isort
+mypy
+flake8
+black
