@@ -1,3 +1,4 @@
+import argparse
 import os
 from datetime import datetime
 
@@ -13,6 +14,8 @@ load_dotenv(ENV_PATH_SET["dev"])
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    
     cur_time = datetime.isoformat(datetime.now(), timespec="seconds")
     
     save_path_root = os.path.join(WORK_DIR, "dataset", "naver_shopping_query_data")
@@ -22,10 +25,18 @@ if __name__ == "__main__":
     
     # client_id & passwd should be registered in 
     # https://developers.naver.com/docs/serviceapi/search/shopping/shopping.md
-    client_id = os.environ.get('naver_api_client_id', None)
-    client_passwd = os.environ.get('naver_api_client_passwd', None)
-    if client_id is None or client_passwd is None:
-        raise ValueError("env cannot be found.")
+    default_client_id = os.environ.get('naver_api_client_id', None)
+    default_client_passwd = os.environ.get('naver_api_client_passwd', None)
+    
+    parser.add_argument("--naver_client_id", type=str, default=default_client_id)
+    parser.add_argument("--naver_client_passwd", type=str, default=default_client_passwd)
+    args = parser.parse_args()
+    client_id = args.naver_client_id
+    client_passwd = args.naver_client_passwd
+    if not client_id:
+        raise ValueError("naver_api_client_id should be given.")
+    if not client_passwd:
+        raise ValueError("naver_api_client_passwd should be given.")
     queries = [
         "의자",
         "책상",
